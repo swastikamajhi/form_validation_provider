@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:form_validation_provider/home_page.dart';
 import 'package:form_validation_provider/validation_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -11,17 +10,14 @@ class FormPage extends StatefulWidget {
 
 class _FormPageState extends State<FormPage> {
   TextEditingController userController = TextEditingController();
-
   TextEditingController emailController = TextEditingController();
-
   TextEditingController passwordController = TextEditingController();
-
   TextEditingController phoneController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Form :"), centerTitle: true),
+      appBar: AppBar(title: Text("Form Fill up:"), centerTitle: true),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 50),
         child: Form(
@@ -40,15 +36,9 @@ class _FormPageState extends State<FormPage> {
                 controller: userController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (value) {
-                  if (value == '' || value == null) {
-                    return 'Name cannot be empty'; //we are passing the error here
-                  } else if (!context
-                      .read<ValidationProvider>()
-                      .userNameCorrection(value)) {
-                    return 'First Letter always Capital';
-                  } else {
-                    return null; //this means no error as occured
-                  }
+                  return context.watch<ValidationProvider>().userNameCorrection(
+                    userController.text,
+                  );
                 },
                 onChanged: (value) {
                   context.read<ValidationProvider>().setUserName(value);
@@ -64,15 +54,9 @@ class _FormPageState extends State<FormPage> {
                 controller: emailController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (value) {
-                  if (value == '' || value == null) {
-                    return 'Email cannot be empty'; //we are passing the error here
-                  } else if (!context
-                      .read<ValidationProvider>()
-                      .emailCorrection(value)) {
-                    return "Enter Capital letter first";
-                  } else {
-                    return null; //this means no error as occured
-                  }
+                  return context.watch<ValidationProvider>().emailCorrection(
+                    emailController.text,
+                  );
                 },
                 onChanged: (value) {
                   context.read<ValidationProvider>().setEmail(value);
@@ -88,17 +72,9 @@ class _FormPageState extends State<FormPage> {
                 controller: passwordController,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (value) {
-                  if (value == '' || value == null) {
-                    return 'Password cannot be empty';
-                  } else if (!context
-                      .read<ValidationProvider>()
-                      .passwordCorrection(value)) {
-                    return "Enter Capital letter first";
-                  } else if (value.length < 8) {
-                    return 'Password is short';
-                  } else {
-                    return null;
-                  }
+                  return context.watch<ValidationProvider>().passwordCorrection(
+                    passwordController.text,
+                  );
                 },
                 onChanged: (value) {
                   context.read<ValidationProvider>().setPassword(value);
@@ -116,15 +92,9 @@ class _FormPageState extends State<FormPage> {
                 keyboardType: TextInputType.number,
                 autovalidateMode: AutovalidateMode.onUserInteraction,
                 validator: (value) {
-                  if (value == '' || value == null) {
-                    return 'phoneNumber cannot be empty'; //we are passing the error here
-                  } else if (!context
-                      .read<ValidationProvider>()
-                      .phoneCorrection(value)) {
-                    return "Enter 10 number with contrycode";
-                  } else {
-                    return null; //this means no error as occured
-                  }
+                  return context.watch<ValidationProvider>().phNumberCorrection(
+                    phoneController.text,
+                  );
                 },
                 onChanged: (value) {
                   context.read<ValidationProvider>().setPhoneNumber(value);
@@ -138,33 +108,7 @@ class _FormPageState extends State<FormPage> {
               //Submit buttons......
               ElevatedButton(
                 onPressed: () {
-                  if (context.read<ValidationProvider>().validateForm()) {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return HomePage();
-                        },
-                      ),
-                    );
-
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        behavior: SnackBarBehavior.fixed,
-                        content: Text('Form submit successful'),
-                        backgroundColor: Colors.green,
-                        duration: Duration(milliseconds: 500),
-                      ),
-                    );
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        behavior: SnackBarBehavior.floating,
-                        content: Text('Form Error '),
-                        backgroundColor: Colors.red,
-                        duration: Duration(milliseconds: 700),
-                      ),
-                    );
-                  }
+                  context.read<ValidationProvider>().validateForm(context);
                 },
                 child: Text('Login'),
               ),

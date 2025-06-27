@@ -1,4 +1,8 @@
+
 import 'package:flutter/material.dart';
+import 'package:form_validation_provider/save_data.dart';
+import 'package:form_validation_provider/screen/home_page.dart';
+import 'package:form_validation_provider/screen/regex_extensions.dart';
 
 class ValidationProvider with ChangeNotifier {
   String _userName = "";
@@ -6,10 +10,11 @@ class ValidationProvider with ChangeNotifier {
   String _password = "";
   String _phoneNumber = "";
 
-  final userNameRegex = RegExp(r'^[A-Z][a-zA-Z0-9]+$');
-  final emailRegex = RegExp(r'^[A-Z][a-zA-Z0-9]+$');
-  final passwordRegex = RegExp(r'^[A-Z][a-zA-Z0-9]+$');
-  final phoneRegex = RegExp(r'^[0-9]{10}$');
+  //getter method
+  String get getUserName => _userName;
+  String get getEmail => _email;
+  String get getPassword => _password;
+  String get getPhoneNumber => _phoneNumber;
 
   void setUserName(String newName) {
     _userName = newName;
@@ -31,46 +36,82 @@ class ValidationProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  bool validateForm() {
-    if (userNameRegex.hasMatch(_userName) &&
-        emailRegex.hasMatch(_email) &&
-        passwordRegex.hasMatch(_password) &&
-        phoneRegex.hasMatch(_phoneNumber)) {
-      return true;
+  //this function to check and validate form..... also save and naviagete to homepage....
+  void validateForm(BuildContext ctx) {
+    if (_userName.isValidName &&
+        _email.isValidEmail &&
+        _password.isValidPassword &&
+        _phoneNumber.isValidPhone) {
+      SaveData.saveFormData(_userName, _email, _password, _phoneNumber);
+
+      Navigator.of(ctx).pushReplacement(
+        MaterialPageRoute(
+          builder: (context) {
+            return HomePage();
+          },
+        ),
+      );
+
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        const SnackBar(
+          behavior: SnackBarBehavior.fixed,
+          content: Text('Form submit successful'),
+          backgroundColor: Colors.green,
+          duration: Duration(milliseconds: 500),
+        ),
+      );
+      notifyListeners();
     } else {
-      return false;
+      ScaffoldMessenger.of(ctx).showSnackBar(
+        const SnackBar(
+          behavior: SnackBarBehavior.floating,
+          content: Text('Form Error '),
+          backgroundColor: Colors.red,
+          duration: Duration(milliseconds: 500),
+        ),
+      );
+      notifyListeners();
     }
   }
 
-  bool userNameCorrection(String name) {
-    if (userNameRegex.hasMatch(name)) {
-      return true;
+  //below method is to check userinput text is in correct pattern or not....
+  String? emailCorrection(String email) {
+    if (email == '') {
+      return 'Email cannot be empty'; //we are passing the error here
+    } else if (!email.isValidEmail) {
+      return "Email Does not Match";
     } else {
-      return false;
+      return null; //this means no error as occured
     }
   }
 
-  bool phoneCorrection(String phoneNum) {
-    if (phoneRegex.hasMatch(phoneNum)) {
-      return true;
+  String? userNameCorrection(String username) {
+    if (username == '') {
+      return 'Username cannot be empty'; //we are passing the error here
+    } else if (!username.isValidName) {
+      return "Username Does not Match";
     } else {
-      return false;
+      return null; //this means no error as occured
     }
   }
 
-  bool emailCorrection(String email) {
-    if (emailRegex.hasMatch(email)) {
-      return true;
+  String? passwordCorrection(String password) {
+    if (password == '') {
+      return 'Password cannot be empty'; //we are passing the error here
+    } else if (!password.isValidPassword) {
+      return "Password Does not Match";
     } else {
-      return false;
+      return null; //this means no error as occured
     }
   }
 
-  bool passwordCorrection(String pass) {
-    if (passwordRegex.hasMatch(pass)) {
-      return true;
+  String? phNumberCorrection(String num) {
+    if (num == '') {
+      return 'Number cannot be empty'; //we are passing the error here
+    } else if (!num.isValidPhone) {
+      return "Number Does not Match";
     } else {
-      return false;
+      return null; //this means no error as occured
     }
   }
 }

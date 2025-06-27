@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:form_validation_provider/form_page.dart';
+import 'package:form_validation_provider/screen/loading_screen.dart';
 import 'package:form_validation_provider/validation_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: FormPage(),
+      home: const LoadingScreen(),
     );
   }
 }
